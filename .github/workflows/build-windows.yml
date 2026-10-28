@@ -1,0 +1,37 @@
+name: Build bred for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/build-windows.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -U -r desktop/requirements.txt
+
+      - name: Build bred.exe
+        working-directory: desktop
+        run: >
+          pyinstaller --onefile --windowed --name bred
+          --icon bred.ico
+          --add-data "bred.ico;."
+          --add-data "bred.png;."
+          --collect-all imageio_ffmpeg
+          --collect-all yt_dlp
+          bred.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bred-windows
+          path: desktop/dist/bred.exe

@@ -41,9 +41,19 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        buildUi()
-        handleShare(intent)
-        startEngine()
+        try {
+            buildUi()
+            handleShare(intent)
+            startEngine()
+        } catch (t: Throwable) {
+            val tv = TextView(this)
+            tv.text = android.util.Log.getStackTraceString(t)
+            tv.setPadding(40, 80, 40, 40)
+            tv.setTextIsSelectable(true)
+            val sv = android.widget.ScrollView(this)
+            sv.addView(tv)
+            setContentView(sv)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
